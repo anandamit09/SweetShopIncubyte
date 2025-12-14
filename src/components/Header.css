@@ -1,0 +1,89 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  font-size: 20px;
+}
+
+.logo-text {
+  color: #2d8659;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+.main-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333333;
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.admin-link {
+  color: #333333;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.admin-link:hover {
+  color: #2d8659;
+}
+
+.sign-in-btn {
+  padding: 8px 20px;
+  border: 1px solid #d0d0d0;
+  background-color: #ffffff;
+  color: #333333;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sign-in-btn:hover {
+  border-color: #2d8659;
+  color: #2d8659;
+}
+
+.sign-up-btn {
+  padding: 8px 20px;
+  border: none;
+  background-color: #2d8659;
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sign-up-btn:hover {
+  background-color: #246b4a;
+}
+
