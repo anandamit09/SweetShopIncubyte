@@ -10,6 +10,7 @@
     "test:watch": "jest --watch",
     "create-admin": "node scripts/createAdmin.js",
     "seed-sweets": "node scripts/seedSweets.js",
+    "remove-duplicates": "node scripts/removeDuplicates.js",
     "test-api": "node test-api.js"
   },
   "keywords": ["sweet-shop", "api", "backend"],
