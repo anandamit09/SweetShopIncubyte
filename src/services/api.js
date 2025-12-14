@@ -36,15 +36,18 @@ const apiRequest = async (endpoint, options = {}) => {
   };
 
   try {
+    console.log('API Request:', endpoint, options.method || 'GET', config); // Debug
     const response = await fetch(url, config);
     const data = await response.json();
+    console.log('API Response:', endpoint, response.status, data); // Debug
 
     if (!response.ok) {
-      throw new Error(data.error || 'API request failed');
+      throw new Error(data.error || `API request failed: ${response.status}`);
     }
 
     return data;
   } catch (error) {
+    console.error('API Error:', endpoint, error); // Debug
     throw error;
   }
 };
@@ -69,6 +72,10 @@ export const authAPI = {
     });
     if (data.token) {
       setToken(data.token);
+    }
+    console.log('API Login Response:', data); // Debug
+    if (data.user) {
+      console.log('User role from API:', data.user.role); // Debug
     }
     return data;
   },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Header.css';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -14,6 +14,15 @@ function Header() {
   const [showRegister, setShowRegister] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showCart, setShowCart] = useState(false);
+
+  // Debug: Log admin status
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('Header - User:', user);
+      console.log('Header - User Role:', user?.role);
+      console.log('Header - Is Admin:', isAdmin());
+    }
+  }, [isAuthenticated, user]);
 
   const handleAdminClick = (e) => {
     e.preventDefault();
@@ -51,12 +60,22 @@ function Header() {
           </button>
           {isAuthenticated ? (
             <>
-              {isAdmin() && (
-                <a href="#" className="admin-link" onClick={handleAdminClick}>
-                  Admin
+              {user && (user.role === 'admin' || isAdmin()) && (
+                <a 
+                  href="#" 
+                  className="admin-link" 
+                  onClick={handleAdminClick}
+                  title="Open Admin Panel"
+                >
+                  🔧 Admin Panel
                 </a>
               )}
-              <span className="user-info">Hello, {user?.username}</span>
+              <span className="user-info">
+                Hello, {user?.username || 'User'}
+                {user?.role === 'admin' && (
+                  <span style={{ color: '#7b2cbf', marginLeft: '5px', fontWeight: '600' }}>(Admin)</span>
+                )}
+              </span>
               <button className="sign-in-btn" onClick={handleLogout}>
                 Logout
               </button>
@@ -95,7 +114,6 @@ function Header() {
       {showCart && (
         <Cart 
           onClose={() => setShowCart(false)} 
-          onCheckoutComplete={onCheckoutComplete}
         />
       )}
     </>

@@ -20,14 +20,17 @@ export const AuthProvider = ({ children }) => {
     // Check if user is already logged in
     const token = authAPI.getToken();
     if (token) {
-      // Token exists, but we need to verify it
-      // For now, we'll just set authenticated to true
-      // In a real app, you might want to verify the token with the backend
       setIsAuthenticated(true);
       // Try to get user info from localStorage
       const savedUser = localStorage.getItem('user');
       if (savedUser) {
-        setUser(JSON.parse(savedUser));
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          setUser(parsedUser);
+          console.log('Restored user from localStorage:', parsedUser);
+        } catch (e) {
+          console.error('Error parsing saved user:', e);
+        }
       }
     }
     setLoading(false);
@@ -36,11 +39,17 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const data = await authAPI.login(username, password);
-      setUser(data.user);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      console.log('Login response:', data); // Debug log
+      if (data.user) {
+        setUser(data.user);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        console.log('User set:', data.user); // Debug log
+        console.log('Is admin?', data.user.role === 'admin'); // Debug log
+      }
       return { success: true, data };
     } catch (error) {
+      console.error('Login error:', error); // Debug log
       return { success: false, error: error.message };
     }
   };
@@ -65,7 +74,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const isAdmin = () => {
-    return user && user.role === 'admin';
+    if (!user) return false;
+    const result = user.role === 'admin';
+    return result;
   };
 
   const value = {

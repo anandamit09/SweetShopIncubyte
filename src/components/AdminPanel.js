@@ -57,29 +57,59 @@ function AdminPanel({ onClose }) {
       setError('');
       setSuccess('');
 
+      // Validate inputs
+      if (!formData.name || !formData.name.trim()) {
+        setError('Name is required');
+        return;
+      }
+      if (!formData.price || isNaN(parseFloat(formData.price)) || parseFloat(formData.price) < 0) {
+        setError('Valid price is required');
+        return;
+      }
+      if (!formData.quantity || isNaN(parseInt(formData.quantity)) || parseInt(formData.quantity) < 0) {
+        setError('Valid quantity is required');
+        return;
+      }
+
       const updates = {
-        name: formData.name,
-        category: formData.category,
+        name: formData.name.trim(),
+        category: formData.category.trim(),
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity),
-        image: formData.image
+        image: formData.image.trim() || null
       };
 
+      console.log('Updating sweet:', editingSweet, updates);
       await sweetsAPI.update(editingSweet, updates);
       setSuccess('Sweet updated successfully!');
       setEditingSweet(null);
       fetchSweets();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
+      console.error('Update error:', err);
       setError('Failed to update sweet: ' + err.message);
     }
   };
 
-  const handleRestock = async (id, currentQuantity) => {
-    const addQuantity = prompt(`Current quantity: ${currentQuantity}\nHow many to add?`);
-    if (addQuantity === null || addQuantity === '') return;
+  const [restockingSweet, setRestockingSweet] = useState(null);
+  const [restockQuantity, setRestockQuantity] = useState('');
 
-    const quantity = parseInt(addQuantity);
+  const handleRestock = (id, currentQuantity) => {
+    setRestockingSweet({ id, currentQuantity });
+    setRestockQuantity('');
+    setError('');
+    setSuccess('');
+  };
+
+  const handleRestockCancel = () => {
+    setRestockingSweet(null);
+    setRestockQuantity('');
+  };
+
+  const handleRestockSave = async () => {
+    if (!restockingSweet) return;
+
+    const quantity = parseInt(restockQuantity);
     if (isNaN(quantity) || quantity <= 0) {
       setError('Please enter a valid positive number');
       return;
@@ -88,8 +118,10 @@ function AdminPanel({ onClose }) {
     try {
       setError('');
       setSuccess('');
-      await inventoryAPI.restock(id, quantity);
-      setSuccess(`Restocked ${quantity} items successfully!`);
+      await inventoryAPI.restock(restockingSweet.id, quantity);
+      setSuccess(`Restocked ${quantity} items successfully! New total: ${restockingSweet.currentQuantity + quantity}`);
+      setRestockingSweet(null);
+      setRestockQuantity('');
       fetchSweets();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -172,6 +204,51 @@ function AdminPanel({ onClose }) {
           </button>
         </div>
 
+        {restockingSweet && (
+          <div className="edit-form" style={{ border: '2px solid #7b2cbf', background: '#f9f5ff' }}>
+            <h3 style={{ color: '#7b2cbf', marginTop: 0 }}>📦 Increase Stock</h3>
+            <div className="form-group">
+              <label><strong>Current Stock:</strong></label>
+              <input
+                type="number"
+                value={restockingSweet.currentQuantity}
+                disabled
+                className="edit-input"
+                style={{ fontSize: '16px', fontWeight: 'bold' }}
+              />
+            </div>
+            <div className="form-group">
+              <label><strong>Quantity to Add:</strong></label>
+              <input
+                type="number"
+                value={restockQuantity}
+                onChange={(e) => setRestockQuantity(e.target.value)}
+                placeholder="Enter how many to add"
+                min="1"
+                className="edit-input"
+                autoFocus
+                style={{ fontSize: '16px', borderColor: '#7b2cbf' }}
+              />
+            </div>
+            <div className="form-group">
+              <label><strong>New Total Stock:</strong></label>
+              <input
+                type="number"
+                value={restockingSweet.currentQuantity + (parseInt(restockQuantity) || 0)}
+                disabled
+                className="edit-input"
+                style={{ fontSize: '16px', fontWeight: 'bold', color: '#2d8659' }}
+              />
+            </div>
+            <div className="form-actions">
+              <button className="save-btn" onClick={handleRestockSave} style={{ background: '#7b2cbf' }}>
+                ✅ Add {restockQuantity || 0} to Stock
+              </button>
+              <button className="cancel-btn" onClick={handleRestockCancel}>Cancel</button>
+            </div>
+          </div>
+        )}
+
         {editingSweet === 'new' && (
           <div className="edit-form">
             <h3>Add New Sweet</h3>
@@ -229,7 +306,12 @@ function AdminPanel({ onClose }) {
         )}
 
         <div className="sweets-list">
-          <h3>Manage Sweets ({sweets.length})</h3>
+          <div style={{ marginBottom: '15px', padding: '10px', background: '#f0f7ff', borderRadius: '6px', border: '1px solid #4a90e2' }}>
+            <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>Manage Sweets ({sweets.length})</h3>
+            <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>
+              <strong>How to use:</strong> Click "✏️ Edit" to modify name, price, category, or quantity. Click "📦 + Stock" to add more items to existing stock.
+            </p>
+          </div>
           {sweets.length === 0 ? (
             <p className="no-sweets">No sweets in database</p>
           ) : (
@@ -247,7 +329,7 @@ function AdminPanel({ onClose }) {
                 </thead>
                 <tbody>
                   {sweets.map((sweet) => (
-                    <tr key={sweet.id}>
+                    <tr key={sweet.id} className={editingSweet === sweet.id ? 'editing' : ''}>
                       {editingSweet === sweet.id ? (
                         <>
                           <td>{sweet.id}</td>
@@ -257,6 +339,8 @@ function AdminPanel({ onClose }) {
                               value={formData.name}
                               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                               className="edit-input"
+                              placeholder="Sweet name"
+                              autoFocus
                             />
                           </td>
                           <td>
@@ -265,28 +349,35 @@ function AdminPanel({ onClose }) {
                               value={formData.category}
                               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                               className="edit-input"
+                              placeholder="Category"
                             />
                           </td>
                           <td>
                             <input
                               type="number"
                               step="0.01"
+                              min="0"
                               value={formData.price}
                               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                               className="edit-input"
+                              placeholder="0.00"
                             />
                           </td>
                           <td>
                             <input
                               type="number"
+                              min="0"
                               value={formData.quantity}
                               onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                               className="edit-input"
+                              placeholder="0"
                             />
                           </td>
                           <td>
-                            <button className="save-btn-small" onClick={handleSave}>Save</button>
-                            <button className="cancel-btn-small" onClick={handleCancel}>Cancel</button>
+                            <div className="action-buttons">
+                              <button className="save-btn-small" onClick={handleSave} title="Save changes">✓ Save</button>
+                              <button className="cancel-btn-small" onClick={handleCancel} title="Cancel editing">✗ Cancel</button>
+                            </div>
                           </td>
                         </>
                       ) : (
@@ -298,9 +389,27 @@ function AdminPanel({ onClose }) {
                           <td>{sweet.quantity}</td>
                           <td>
                             <div className="action-buttons">
-                              <button className="edit-btn" onClick={() => handleEdit(sweet)}>Edit</button>
-                              <button className="restock-btn" onClick={() => handleRestock(sweet.id, sweet.quantity)}>Restock</button>
-                              <button className="delete-btn" onClick={() => handleDelete(sweet.id, sweet.name)}>Delete</button>
+                              <button 
+                                className="edit-btn" 
+                                onClick={() => handleEdit(sweet)}
+                                title="Click to edit name, price, category, and quantity"
+                              >
+                                ✏️ Edit
+                              </button>
+                              <button 
+                                className="restock-btn" 
+                                onClick={() => handleRestock(sweet.id, sweet.quantity)}
+                                title="Click to add more stock"
+                              >
+                                📦 + Stock
+                              </button>
+                              <button 
+                                className="delete-btn" 
+                                onClick={() => handleDelete(sweet.id, sweet.name)}
+                                title="Delete this sweet permanently"
+                              >
+                                🗑️ Delete
+                              </button>
                             </div>
                           </td>
                         </>
