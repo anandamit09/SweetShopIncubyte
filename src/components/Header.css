@@ -44,6 +44,12 @@
   gap: 15px;
 }
 
+.user-info {
+  color: #333333;
+  font-size: 16px;
+  font-weight: 500;
+}
+
 .admin-link {
   color: #333333;
   text-decoration: none;
