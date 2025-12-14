@@ -83,12 +83,31 @@ export const authAPI = {
 // Sweets API
 export const sweetsAPI = {
   getAll: async () => {
-    return await apiRequest('/sweets', {
-      method: 'GET',
-    });
+    // Public endpoint - no auth required
+    try {
+      const url = `${API_BASE_URL}/sweets`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Network error' }));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching sweets:', error);
+      throw error;
+    }
   },
 
   search: async (filters = {}) => {
+    // Public endpoint - no auth required
     const { name, category, minPrice, maxPrice } = filters;
     const params = new URLSearchParams();
     
@@ -98,11 +117,19 @@ export const sweetsAPI = {
     if (maxPrice) params.append('maxPrice', maxPrice);
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/sweets/search?${queryString}` : '/sweets/search';
+    const url = `${API_BASE_URL}/sweets/search${queryString ? `?${queryString}` : ''}`;
     
-    return await apiRequest(endpoint, {
+    const response = await fetch(url, {
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'API request failed');
+    }
+    return data;
   },
 
   add: async (sweet) => {
@@ -142,4 +169,5 @@ export const inventoryAPI = {
     });
   },
 };
+
 

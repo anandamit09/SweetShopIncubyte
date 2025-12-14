@@ -73,3 +73,4 @@ function LoginModal({ isOpen, onClose, onSwitchToRegister }) {
 
 export default LoginModal;
 
+

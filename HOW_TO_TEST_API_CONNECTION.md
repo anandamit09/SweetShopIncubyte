@@ -193,3 +193,4 @@ If something isn't working:
 4. Verify both servers are running
 5. Check localStorage for token
 
+

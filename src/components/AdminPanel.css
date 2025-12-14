@@ -1,0 +1,282 @@
+.admin-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.admin-panel {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.admin-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 2px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.admin-panel-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.admin-message {
+  margin: 15px 30px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.admin-message.error {
+  background: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}
+
+.admin-message.success {
+  background: #efe;
+  color: #3c3;
+  border: 1px solid #cfc;
+}
+
+.admin-actions {
+  padding: 20px 30px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.add-new-btn {
+  padding: 10px 20px;
+  background: #2d8659;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-new-btn:hover {
+  background: #246b4a;
+}
+
+.edit-form {
+  padding: 20px 30px;
+  border-bottom: 2px solid #e0e0e0;
+  background: #f9f9f9;
+}
+
+.edit-form h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2d8659;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-btn, .cancel-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.save-btn {
+  background: #2d8659;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #246b4a;
+}
+
+.cancel-btn {
+  background: #ddd;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background: #ccc;
+}
+
+.sweets-list {
+  padding: 20px 30px;
+}
+
+.sweets-list h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+
+.no-sweets {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+}
+
+.sweets-table {
+  overflow-x: auto;
+}
+
+.sweets-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sweets-table th {
+  background: #f5f5f5;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.sweets-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.sweets-table tr:hover {
+  background: #f9f9f9;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.edit-btn, .restock-btn, .delete-btn, .save-btn-small, .cancel-btn-small {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-btn {
+  background: #4a90e2;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #357abd;
+}
+
+.restock-btn {
+  background: #7b2cbf;
+  color: white;
+}
+
+.restock-btn:hover {
+  background: #6a1fa8;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+.save-btn-small {
+  background: #2d8659;
+  color: white;
+}
+
+.save-btn-small:hover {
+  background: #246b4a;
+}
+
+.cancel-btn-small {
+  background: #ddd;
+  color: #333;
+}
+
+.cancel-btn-small:hover {
+  background: #ccc;
+}
+

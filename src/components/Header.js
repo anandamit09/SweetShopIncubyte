@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import './Header.css';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
+import AdminPanel from './AdminPanel';
+import Cart from './Cart';
 
 function Header() {
   const { isAuthenticated, user, logout, isAdmin } = useAuth();
+  const { getTotalItems } = useCart();
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showCart, setShowCart] = useState(false);
 
-  const handleAdminClick = () => {
-    // functionality here - will implement admin panel later
-    alert('Admin panel coming soon!');
+  const handleAdminClick = (e) => {
+    e.preventDefault();
+    setShowAdminPanel(true);
   };
 
   const handleSignInClick = () => {
@@ -37,6 +43,12 @@ function Header() {
           <h1 className="main-title">Sweet Shop</h1>
         </div>
         <div className="header-right">
+          <button className="cart-icon-btn" onClick={() => setShowCart(true)}>
+            🛒
+            {getTotalItems() > 0 && (
+              <span className="cart-badge">{getTotalItems()}</span>
+            )}
+          </button>
           {isAuthenticated ? (
             <>
               {isAdmin() && (
@@ -77,6 +89,15 @@ function Header() {
           setShowLogin(true);
         }}
       />
+      {showAdminPanel && (
+        <AdminPanel onClose={() => setShowAdminPanel(false)} />
+      )}
+      {showCart && (
+        <Cart 
+          onClose={() => setShowCart(false)} 
+          onCheckoutComplete={onCheckoutComplete}
+        />
+      )}
     </>
   );
 }

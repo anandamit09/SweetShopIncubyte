@@ -11,22 +11,21 @@ function ProductGrid() {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchProducts();
-    } else {
-      setLoading(false);
-    }
-  }, [isAuthenticated]);
+    // Always fetch products, regardless of authentication status
+    fetchProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('Fetching sweets (public endpoint, no auth required)...');
       const data = await sweetsAPI.getAll();
+      console.log('Sweets fetched successfully:', data.length, 'items');
       setProducts(data);
     } catch (err) {
-      setError(err.message || 'Failed to fetch products');
       console.error('Error fetching products:', err);
+      setError(err.message || 'Failed to fetch products');
     } finally {
       setLoading(false);
     }
@@ -36,14 +35,6 @@ function ProductGrid() {
     // Refresh products after purchase/update
     fetchProducts();
   };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="auth-required-message">
-        <p>Please log in to view sweets.</p>
-      </div>
-    );
-  }
 
   if (loading) {
     return (

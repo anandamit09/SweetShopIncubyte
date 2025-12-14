@@ -87,3 +87,4 @@ function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
 
 export default RegisterModal;
 
+

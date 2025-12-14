@@ -1,28 +1,32 @@
 import React, { useState } from 'react';
 import './ProductCard.css';
-import { inventoryAPI } from '../services/api';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 function ProductCard({ product, onUpdate }) {
-  const [purchasing, setPurchasing] = useState(false);
-  const [message, setMessage] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
 
-  const handlePurchase = async () => {
-    try {
-      setPurchasing(true);
-      setMessage('');
-      await inventoryAPI.purchase(product.id, 1);
-      setMessage('Purchase successful!');
-      // Refresh product list
-      if (onUpdate) {
-        setTimeout(() => {
-          onUpdate();
-          setMessage('');
-        }, 1000);
-      }
-    } catch (error) {
-      setMessage(error.message || 'Purchase failed');
-    } finally {
-      setPurchasing(false);
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      alert('Please log in to add items to cart.');
+      return;
+    }
+
+    if (product.quantity < quantity) {
+      alert(`Only ${product.quantity} items available in stock.`);
+      return;
+    }
+
+    addToCart(product, quantity);
+    setQuantity(1); // Reset quantity after adding
+  };
+
+  const handleQuantityChange = (change) => {
+    const newQuantity = quantity + change;
+    if (newQuantity >= 1 && newQuantity <= product.quantity) {
+      setQuantity(newQuantity);
     }
   };
 
@@ -59,17 +63,33 @@ function ProductCard({ product, onUpdate }) {
         <p className="product-quantity">
           {isOutOfStock ? 'Out of Stock' : `In Stock: ${product.quantity}`}
         </p>
-        {message && (
-          <p className={`product-message ${message.includes('success') ? 'success' : 'error'}`}>
-            {message}
-          </p>
+        
+        {!isOutOfStock && isAuthenticated && (
+          <div className="quantity-selector">
+            <button
+              className="qty-btn"
+              onClick={() => handleQuantityChange(-1)}
+              disabled={quantity <= 1}
+            >
+              −
+            </button>
+            <span className="qty-value">{quantity}</span>
+            <button
+              className="qty-btn"
+              onClick={() => handleQuantityChange(1)}
+              disabled={quantity >= product.quantity}
+            >
+              +
+            </button>
+          </div>
         )}
+
         <button 
-          className={`purchase-btn ${isOutOfStock ? 'disabled' : ''}`}
-          onClick={handlePurchase}
-          disabled={isOutOfStock || purchasing}
+          className={`purchase-btn ${isOutOfStock || !isAuthenticated ? 'disabled' : ''}`}
+          onClick={handleAddToCart}
+          disabled={isOutOfStock || !isAuthenticated}
         >
-          {purchasing ? 'Purchasing...' : 'Purchase'}
+          {!isAuthenticated ? 'Login to Add to Cart' : 'Add to Cart'}
         </button>
       </div>
     </div>
